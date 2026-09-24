@@ -3,7 +3,7 @@
 ember-concurrency 2.0 is primarily an "engine" replacement. Internally, its been
 substantially rewritten and decoupled from Ember at it's core. This will enable
 a much more maintainable codebase, as well as setting the stage for potential
-extraction of core primatives for us in the broader JavaScript ecosystem.
+extraction of core primitives for use in the broader JavaScript ecosystem.
 
 The application developer-facing changes are fairly minimal, and there are few
 semantic changes to the operation of the addon.
@@ -67,6 +67,12 @@ with the computed property system.
 
 The Task, TaskGroup, and TaskInstance remain compatible with `@computed`-based
 uses, as well, allowing use in both classic and Glimmer components.
+
+As a consequence of using `@tracked` properties, reading `Task` or `TaskInstance`
+state via native getters inside a computed property may require annotating the
+native getter with [`@dependentKeyCompat`](https://api.emberjs.com/ember/release/functions/@ember%2Fobject%2Fcompat/dependentKeyCompat) to make changes visible to the
+computed property system. This also applies to decorators like `@lastValue` that
+internally create a native getter. For more information, see [this comment](https://github.com/machty/ember-concurrency/issues/424#issuecomment-1322505998).
 
 ### Scheduler now runs all task steps on microtask queue
 

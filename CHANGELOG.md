@@ -1,5 +1,144 @@
 # Changelog
 
+### 5.3.0
+
+- Type Task.perform as a property (#615)
+
+### 5.2.1
+
+- Allow the async arrow task transform to run under Babel 8 (#613)
+
+### 5.2.0
+
+- Fix compatibility with ember-cli-code-coverage (#604)
+
+### 5.1.0
+
+- The EC Babel async arrow function transformer now prunes imports that become unused after applying the transform so that Rollup doesn't complain about unused imports. (#595)
+
+### 5.0.1
+
+- Reverted required Node.js version requirements
+- Removed internal references to `ember/object` `get()` and `computed`
+
+### 5.0.0
+
+- Breaking Changes
+  - Removed a number of features that were overloaded, dependent on Ember Object, TypeScript-unfriendly, and/or otherwise likely to cause problems with future/Polaris Ember
+  - Some of these features were already explicitly or soft-deprecated (removed from docs or otherwise discouraged)
+  - Removed features include:
+    - Removed lifecycle events, e.g. firing `taskName:started`, `taskName:errored`
+    - Removed Task Groups
+    - Removed support for any Task construction other than via async arrow fn
+      - e.g. `task(function * () {})` not supported
+    - Removed all decorator-based APIs, e.g. `@task * foo() { ... }`
+    - Removed encapsulated tasks
+    - Removed Ember.ENV.DEBUG_TASKS
+      - This may be reinstated by some other means if there is interest. In the meantime you can continue to use `{debug:true}` for debugging logging on specific tasks of interest
+
+### 4.0.6
+
+More V5 deprecations (#592):
+
+- rm reference to `Ember._setComputedDecorator`
+- deprecate any form of the `task()` constructor other than `task([{}], async () => {})`
+  - The only allowable use is the one with async arrow fn that gets transpiled by our babel codemod.
+
+### 4.0.5
+
+Begin adding V5 deprecations (#591):
+
+- Deprecated:
+  - Decorator APIs
+    - Decorators don't play well with TS - use modern `taskName = task(async () => {})` syntax instead
+  - waitForProperty
+    - Relies on legacy observers.
+  - Task Groups
+    - Awkward to continue to support, overloaded as a concept in general
+
+### 4.0.4
+
+- dropped `ember-source` and `@glimmer/tracking` from peerDependencies (#586)
+
+### 4.0.3
+
+- Fix missing @babel/helper-module-imports dependency (#578)
+
+### 4.0.2
+
+- Make glint template an optional peer dependency (#572)
+
+### 4.0.1
+
+- Update assert in task-public-api.js to include note about required Babel transform for arrow functions (#569)
+
+### 4.0.0
+  - Ember Concurrency is now a V2 Embroider Addon (#551)
+    - BREAKING CHANGE: you must now register the Babel transform used by Ember Concurrency within consuming apps and addons
+      - See upgrade docs: https://ember-concurrency.com/docs/v4-upgrade
+  - The guides have been updated to reflect modern/best practices:
+    - Instead of using the `(perform)` helper, it is now recommended that the bound `.perform()` method on each Task be directly invoked in the template, e.g. `{{on "click" this.myTask.perform}}`, or, when arguments are present, `{{on "click" (fn this.myTask.perform 123 'foo')}}`
+  - Glint template registry has been provided for EC's 3 helpers.
+
+### 3.1.1
+  - Add ember 5 as peerDependencies (#542)
+
+### 3.1.0
+  - Support waitFor()-type modifiers in async arrow transform (#536)
+  - Drop now-unneeded dependency on polyfill for unsupported Ember versions
+  - [docs] Fix broken code block rendering for examples (#522, #524)
+
+### 3.0.0
+  - Drop support for Node versions below version 16 (#520)
+  - Add support and tests for Ember 4 (#515)
+    - Minimum supported Ember version is now 3.28+ (but still likely to work for lower versions)
+  - TypeScript: use the types published directly from Ember.js (#512)
+
+### 2.3.7
+  - Mention native class requirement in un-transpiled task() error (#494)
+
+### 2.3.6
+  - Additional fix for Babel transpiler conflict with ember-cli-code-coverage / istanbul (#492)
+
+### 2.3.5
+  - Fix Babel transpiler conflict with ember-cli-code-coverage (#490)
+
+### 2.3.4
+  - Bugfix: observers stopped working in 2.3.0+ (#487)
+
+### 2.3.3
+  - Fix types for the async arrow API for `dropTask`, `restartableTask`, and others (#486)
+
+### 2.3.2
+  - Simplify the async arrow fn task() API to allow omitting the `this` param, e.g.
+    `myTask = task(async () => {})` (#477)
+
+### 2.3.1
+  - Add runtime assertion to detect transpilation failures with the new async arrow fn API
+
+### 2.3.0
+  - Introduce async-arrow task() API as the new universal JS/TS API, e.g.
+    `myTask = task(this, { drop: true }, async (arg: string) => {})`. This new API
+    sidesteps the vast majority of TypeScript issues that plagued past decorators- and generators-
+    based APIs. All prior APIs are still supported, but users are strongly recommended
+    to migrate to the new API. Recommended steps:
+    - Finish migrating any classes with EC tasks to ES6 class syntax
+    - Once you've done that, use the following codemods on any `app/` or `addon/` folders that are using Ember Concurrency tasks
+      - Convert `@task` decorator based APIs to the new async-arrow fn
+        - `npx machty-ember-concurrency-codemods async-arrow-task app/**/*.ts app/**/*.js`
+      - If you've used `ember-concurrency-ts`, run the following codemod to remove `taskFor()`
+        - `npx machty-ember-concurrency-codemods rm-ember-concurrency-ts app/**/*.ts app/**/*.js`
+  - The `ember-concurrency-ts` and `ember-concurrency-async` packages are no longer needed
+    and can be removed
+  - Soft-deprecated (removed from documentation, likely to formally deprecate later)
+    a number of less commonly used features
+    - Encapsulated Tasks
+    - Task Groups
+
+### 2.2.1
+  - Added missing TypeScript types for `onState` task modifier and
+    `TaskFactory#setOnState` (#449, fixed #447. Thanks @johanrd for the heads up!)
+
 ### 2.2.0
   - Implemented a public API for [Task Modifiers](https://ember-concurrency.com/docs/advanced/task-modifiers),
     providing a way for users to define additional modifiers and behavior in
@@ -59,7 +198,7 @@
 ### 2.0.0-rc.1
   - Implement decorators from `ember-concurrency-decorators`. The "nice" decorators
     from `ember-concurrency-decorators` are now built-in to ember-concurrency, without
-    requiring an additional addon or seperate import. All decorators are available for
+    requiring an additional addon or separate import. All decorators are available for
     import directly from the top-level `ember-concurrency` package.
 
     **Addon maintainers**: Please see notes in `UPGRADING-2.x.md` if you're using

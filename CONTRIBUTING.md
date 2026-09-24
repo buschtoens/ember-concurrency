@@ -1,13 +1,13 @@
 # Contributing
 
-This project uses `yarn` as a package manager. If you're adding a new dependency, ensure that the `yarn.lock` lockfile is updated and committed into your pull request.
+This project uses `pnpm` as a package manager. If you're adding a new dependency, ensure that the `pnpm-lock.yaml` lockfile is updated and committed into your pull request.
 
 ## Addon Maintenance
 
 ### Installation
 
 * `git clone` this repository
-* `yarn install`
+* `pnpm i`
 
 ### Running
 
@@ -16,7 +16,7 @@ This project uses `yarn` as a package manager. If you're adding a new dependency
 
 ### Running Tests
 
-* `yarn test:ember-compatibility` (Runs `ember try:each` to test your addon against multiple Ember versions)
+* `pnpm test:ember-compatibility` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
 
@@ -24,10 +24,16 @@ This project uses `yarn` as a package manager. If you're adding a new dependency
 
 * `ember build`
 
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+For more information on using ember-cli, visit [https://cli.emberjs.com/release/](https://cli.emberjs.com/release/).
 
-### Generate Docs
+### Releasing new versions / publishing to NPM
 
-TODO: use build pipeline.
-* From addon root directory `yarn docs:build`
-* View built docs in `tests/dummy/public/api`
+```
+cd packages/ember-concurrency
+pnpm build
+npx release-it
+```
+
+### Publishing Guides and API Docs
+
+The [docs site](https://www.ember-concurrency.com) is built and deployed when merging to master. See [docs.yml](./.github/workflows/deploy-docs.yml).

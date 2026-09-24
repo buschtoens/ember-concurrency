@@ -1,0 +1,28 @@
+// Babel config for building the ember-concurrency package itself. Because EC is a V2 addon,
+// this babel config should *not* apply presets or compile away ES modules.
+// It exists only to provide development niceties for you, like automatic
+// template colocation.
+{
+  "plugins": [
+    [
+      "@babel/plugin-transform-typescript",
+      {
+        "allExtensions": true,
+        "onlyRemoveTypeImports": true,
+        "allowDeclareFields": true
+      }
+    ],
+    "@embroider/addon-dev/template-colocation-plugin",
+    [
+      "babel-plugin-ember-template-compilation",
+      {
+        "targetFormat": "hbs",
+        "transforms": []
+      }
+    ],
+    [
+      "module:decorator-transforms",
+      { "runtime": { "import": "decorator-transforms/runtime" } }
+    ]
+  ]
+}
